@@ -57,7 +57,7 @@ const MovieCard: React.FC<IMovieCard> = ({
                 <p className='text-white font-bold text-lg'>{title}</p>
                 <div className='flex items-center gap-2 mt-2'>
                   <FaStar color='white' />
-                  <p className='text-white font-bold'>{voteAverage} /10</p>
+                  <p className='text-white font-bold'>{voteAverage.toFixed(1)} /10</p>
                 </div>
             </div>
             

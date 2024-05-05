@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const Header = () => {
   return (
     <nav className='flex justify-between items-center h-20 px-5 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.5)]'>
-        <h1 className='text-2xl font-bold'>Movies DB</h1>
+        <Link to={ROUTES.HOME}><h1 className='text-2xl font-bold'>Movies DB</h1></Link>
         <ul className='flex gap-7'>
             <li> <Link to={ ROUTES.HOME }> HOME</Link></li>
             <li> <Link to={ ROUTES.POPULAR }> POPULAR</Link></li>

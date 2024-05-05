@@ -47,7 +47,7 @@ const NowPlaying: React.FC = () => {
         <h1 className='font-semibold text-3xl ml-5'>NOW PLAYING</h1>
         <div className='flex gap-5 '>
           <button onClick={ordenarPorTitulo} className='bg-blue-500 px-3 py-1 font-bold rounded-lg text-white text-sm flex items-center justify-center gap-2'> <MdSort /><p>Sort by Name</p></button>
-          <button onClick={ordenarPorVotoAverage}  className='bg-blue-500 px-3 py-1 font-bold rounded-lg text-white text-sm flex items-center justify-center gap-2'> <MdSort /><p>Sort by Name</p></button>
+          <button onClick={ordenarPorVotoAverage}  className='bg-blue-500 px-3 py-1 font-bold rounded-lg text-white text-sm flex items-center justify-center gap-2'> <MdSort /><p>Sort by Calification</p></button>
         </div>
       </div>
       {!isLoading && <div> Loading </div> }
