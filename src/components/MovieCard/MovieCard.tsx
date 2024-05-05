@@ -46,6 +46,7 @@ const MovieCard: React.FC<IMovieCard> = ({
         <div
             onClick={() => {
                 navigateMovies(movieId, title);
+                window.location.reload();
             }}
             className='h-[350px] w-[234px] flex-shrink-0 relative overflow-hidden rounded-lg shadow-[0px_-1px_5px_2px_rgba(0,0,0,0.5)]'
             
