@@ -1,13 +1,17 @@
-import React, {useEffect, useState} from 'react'
-import { getPopular} from '../../services';
-import { getTopRated} from '../../services';
-import { getNowPlaying} from '../../services';
+import React, {useEffect, useState, useRef } from 'react'
+import { getPopular, getTopRated, getNowPlaying} from '../../services';
 import { MovieCard } from '../../components/MovieCard';
 import { IMovieCard} from '../../components/MovieCard/types';
 import { movies as movieMock } from '../../constants/moviesMock';
-import { IMovieResponse } from '../Popular/types';
 import { Link } from 'react-router-dom';
+
+
+import { IMovieResponse } from '../Popular/types';
+
 import { ROUTES } from '../../Routes/constants'
+import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
+
 
 const Home: React.FC = () => {
   const [moviesPopular, setPopularMovies] = useState<IMovieResponse[]>([]);
@@ -19,11 +23,14 @@ const Home: React.FC = () => {
   const [moviesNowPlaying, setNowPlayingMovies] = useState<IMovieResponse[]>([]);
   const [isLoadingNowPlaying, setIsLoadingNowPlaying] = useState<boolean>(false);
 
+  const moviesRefPopular = useRef<HTMLDivElement>(null);
+  const moviesRefNowPlaying = useRef<HTMLDivElement>(null);
+  const moviesRefTopRated = useRef<HTMLDivElement>(null);
+
   const getPopularMovies = async() =>{
     await getPopular()
     .then((data) => {
       if(data && data.data){
-        console.log(data.data.results);
         setPopularMovies(data.data.results);
       }
     })
@@ -42,7 +49,6 @@ const Home: React.FC = () => {
     await getTopRated()
     .then((data) => {
       if(data && data.data){
-        console.log(data.data.results);
         setTopRatedMovies(data.data.results);
       }
     })
@@ -60,7 +66,6 @@ const Home: React.FC = () => {
     await getNowPlaying()
     .then((data) => {
       if(data && data.data){
-        console.log(data.data.results);
         setNowPlayingMovies(data.data.results);
       }
     })
@@ -74,29 +79,40 @@ const Home: React.FC = () => {
     getNowPlayingMovies()
   }, [])
 
+  const moveOverflow = (target : 'Popular' | 'NowPlaying' | 'TopRated', direction : 'left' | 'right') => {
+
+    let objectiveOverflow;
+    let movement;
+
+    if (target == 'Popular') {
+      objectiveOverflow = moviesRefPopular;
+    }
+    else if (target == 'NowPlaying') {
+      objectiveOverflow = moviesRefNowPlaying;
+    }
+    else{
+      objectiveOverflow = moviesRefTopRated;
+    }
+
+    if(direction == 'left'){
+      movement = -1250
+    }else{
+      movement = 1250
+    }
+
+    if (objectiveOverflow.current) {
+      objectiveOverflow.current.scrollTo({
+        left: objectiveOverflow.current.scrollLeft + movement, 
+        behavior: 'smooth'
+      });
+    }    
+  };
 
 
 
 
 
 
-  
-  const movieCards = []
-
-  for(let i = 0; i < 12; i++) {
-
-    
-    movieCards.push(
-      <MovieCard
-      movieId={ movieMock[i].id}
-      posterPath={ movieMock[i].poster_path}
-      title={ movieMock[i].title}
-      voteAverage={ movieMock[i].vote_average}
-      genreId={ movieMock[i].genre_ids[0]}
-
-    />
-    )
-  }
 
   return (
     <div className='mx-5'>
@@ -108,21 +124,39 @@ const Home: React.FC = () => {
       </div>
 
       {!isLoadingPopular && <div> Loading </div> }
-      <div className='flex gap-4 overflow-hidden mb-12'>
-        {moviesPopular?.length > 0 &&
-        
-        moviesPopular.map((movie) => (
-          <MovieCard
-            key = {movie.id}
-            movieId = {movie.id}
-            posterPath = {movie.poster_path}
-            title = {movie.title}
-            genreId = {movie.genre_ids[0]}
-            voteAverage = {movie.vote_average}
+      <div className=' relative'>
+        <div className='flex gap-4 overflow-hidden mb-12' ref={moviesRefPopular}>
+          {moviesPopular?.length > 0 &&
+          
+          moviesPopular.map((movie) => (
+            <MovieCard
+              key = {movie.id}
+              movieId = {movie.id}
+              posterPath = {movie.poster_path}
+              title = {movie.title}
+              genreId = {movie.genre_ids[0]}
+              voteAverage = {movie.vote_average}
 
-          />
-        ))}
+            />
+          ))}
+        </div>
+        
+        <div className='w-full h-full top-0 absolute flex justify-between pointer-events-none'> 
+          <div onClick={() => { moveOverflow('Popular', 'left')}} className='pointer-events-auto h-full w-[5%] flex flex-col justify-center items-start opacity-50 hover:opacity-100 bg-gradient-to-r from-black'>
+            <IoIosArrowBack color='white' size={35} />
+          </div>
+          <div onClick={() => { moveOverflow('Popular', 'right')}} className='pointer-events-auto h-full w-[5%] flex flex-col justify-center items-end opacity-50 hover:opacity-100 bg-gradient-to-l from-black'>
+            <IoIosArrowForward color='white' size={35} />
+          </div>
+        </div>
       </div>
+      
+
+
+
+
+
+
       <div className='flex justify-between my-7'>
         <h1 className='font-semibold text-3xl ml-5'>TOP RATED</h1>
         <Link to={ROUTES.TOPRATED}>
@@ -131,7 +165,8 @@ const Home: React.FC = () => {
       </div>
       
       {!isLoadingTopRated && <div> Loading </div> }
-      <div className='flex gap-4 overflow-hidden mb-12'>
+      <div className=' relative'>
+      <div className='flex gap-4 overflow-hidden mb-12' ref={moviesRefTopRated}>
         {moviesTopRated?.length > 0 &&
         
         moviesTopRated.map((movie) => (
@@ -147,6 +182,16 @@ const Home: React.FC = () => {
         ))}
       </div>
 
+      <div className='w-full h-full top-0 absolute flex justify-between pointer-events-none'> 
+          <div onClick={() => { moveOverflow('TopRated', 'left')}} className='pointer-events-auto h-full w-[5%] flex flex-col justify-center items-start opacity-50 hover:opacity-100 bg-gradient-to-r from-black'>
+            <IoIosArrowBack color='white' size={35} />
+          </div>
+          <div onClick={() => { moveOverflow('TopRated', 'right')}} className='pointer-events-auto h-full w-[5%] flex flex-col justify-center items-end opacity-50 hover:opacity-100 bg-gradient-to-l from-black'>
+            <IoIosArrowForward color='white' size={35} />
+          </div>
+        </div>
+      </div>
+
       <div className='flex justify-between my-7'>
         <h1 className='font-semibold text-3xl ml-5'>NOW PLAYING</h1>
         <Link to={ROUTES.NOWPLAYING}>
@@ -155,7 +200,8 @@ const Home: React.FC = () => {
       </div>
 
       {!isLoadingNowPlaying && <div> Loading </div> }
-      <div className='flex gap-4 overflow-hidden mb-12'>
+      <div className=' relative'>
+      <div className='flex gap-4 overflow-hidden mb-12' ref={moviesRefNowPlaying}>
         {moviesNowPlaying?.length > 0 &&
         
         moviesNowPlaying.map((movie) => (
@@ -169,6 +215,16 @@ const Home: React.FC = () => {
 
           />
         ))}
+      </div>
+
+      <div className='w-full h-full top-0 absolute flex justify-between pointer-events-none'> 
+      <div onClick={() => { moveOverflow('NowPlaying', 'left')}} className='pointer-events-auto h-full w-[5%] flex flex-col justify-center items-start opacity-50 hover:opacity-100 bg-gradient-to-r from-black'>
+        <IoIosArrowBack color='white' size={35} />
+      </div>
+      <div onClick={() => { moveOverflow('NowPlaying', 'right')}} className='pointer-events-auto h-full w-[5%] flex flex-col justify-center items-end opacity-50 hover:opacity-100 bg-gradient-to-l from-black'>
+        <IoIosArrowForward color='white' size={35} />
+      </div>
+      </div>
       </div>
       
     </div>

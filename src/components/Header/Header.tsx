@@ -12,7 +12,7 @@ const Header = () => {
             <li> <Link to={ ROUTES.POPULAR }> POPULAR</Link></li>
             <li> <Link to={ ROUTES.TOPRATED }> TOP RATED</Link></li>
             <li> <Link to={ ROUTES.NOWPLAYING }> NOW PLAYING</Link></li>
-            <li> <Link to={ ROUTES.POPULAR }> MY FAVORITES</Link></li>
+            <li> <Link to={ ROUTES.FAVORITES }> MY FAVORITES</Link></li>
         </ul>
     </nav>
   )
